@@ -1,27 +1,7 @@
-const csv = require('csv-parser');
-const { stringify } = require('csv-stringify');
+const { parse } = require('csv-parse');
 
 const Transformer = require('../transformer/Transformer');
-const CONSTANTS = require('./Constants');
 
-/**
- * 
- * @param {Array<string>} itemsToPickUp
- * @param {WritableStream} writeStream
- */
-const outputIntoCSV = (itemsToPickUp, writeStream) => {
-    const columns = {
-        product_code: CONSTANTS.PRODUCT_CODE,
-        quantity: CONSTANTS.QUANTITY,
-        pick_location: CONSTANTS.PICK_LOCATION,
-    }
-    const stringifier = stringify({ header: true, columns: columns });
-
-    itemsToPickUp.forEach(item => {
-        stringifier.write(item);
-    });
-    stringifier.pipe(writeStream);
-}
 
 /**
  * 
@@ -30,14 +10,20 @@ const outputIntoCSV = (itemsToPickUp, writeStream) => {
  */
 module.exports.transformCSVStream = (inputStream, outputStream) => {
     const transformer = new Transformer();
+    const parser = parse({
+        delimiter: ',',
+        columns: true,
+        ignore_last_delimiters: true,
+        bom: true,
+    });
+
     inputStream
-        .pipe(csv())
+        .pipe(parser)
         .on('data', (record) => {
             transformer.putOnShelves(record);
         })
         .on('end', () => {
-            const itemsToPickUp = transformer.listItemsToPickUp();
-            outputIntoCSV(itemsToPickUp, outputStream);
+            transformer.transformCSVStream(outputStream);
         })
         .on('error', (error) => {
             throw error;

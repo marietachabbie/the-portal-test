@@ -30,27 +30,23 @@ class Transformer {
 
     /**
      * 
-     * @returns {Array<string>}
+     * @param {WritableStream} outputStream 
      */
-    listItemsToPickUp () {
-        const itemsToPickUp = [];
+    transformCSVStream (outputStream) {
+        const columns = ['product_code', 'quantity', 'pick_location'];
+        outputStream.write(columns.join(',') + '\n');
         for (const column in this.bays) {
             this.bays[column].forEach((shelf, i) => {
                 if (shelf) {
-                    let item = [];
                     const shelfName = `${column} ${i}`;
                     for (const product_code in shelf) {
-                        item.push(product_code);
-                        item.push(shelf[product_code]);
-                        item.push(shelfName);
-                        itemsToPickUp.push(item);
-                        item = [];
+                        outputStream.write(`${product_code},${shelf[product_code]},${shelfName}\n`);
                     }
                 }
             });
         }
 
-        return itemsToPickUp;
+        outputStream.end();
     }
 }
 
