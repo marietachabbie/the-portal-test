@@ -1,17 +1,14 @@
-const CONSTANTS = require('../utils/Constants');
-
 class Transformer {
     constructor() {
-        const alphabet = CONSTANTS.ALPHABET;
         this.bays = {};
+        for (let i = 65; i < 91; i++) {
+            this.bays[String.fromCharCode(i)] = Array(10);
+        }
 
-        alphabet.forEach(char => {
-            this.bays[char] = Array(10);
-        })
-
-        alphabet.forEach(char => {
-            this.bays[alphabet[0] + char] = Array(10);
-        })
+        const A = String.fromCharCode(65);
+        for (let i = 65; i < 91; i++) {
+            this.bays[A + String.fromCharCode(i)] = Array(10);
+        }
     }
 
     /**
