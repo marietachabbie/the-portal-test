@@ -11,16 +11,18 @@ Given a CSV input file with 3columns:
 
 Find the optimal route through the warehouse.
 
-# To Run the App:
+# To Run the App
+
+Redirect to the project directory and run:
 
 ```sh
-npm install -g
-stream -i input.csv -o output.csv
+npm install -g .
+optimise-shelf-pickup -i input.csv -o output.csv
 ```
 
 If no input filepath given, the program will read from `stdin`. If no output filepath given, the program will write into `stdout`.
 
 For more informartion:
 ```sh
-stream --help
+optimise-shelf-pickup --help
 ```

@@ -17,11 +17,10 @@
     },
     "homepage": "https://github.com/marietachabbie/the-portal-test#readme",
     "bin": {
-        "stream": "./src/index.js"
+        "optimise-shelf-pickup": "./src/index.js"
     },
     "dependencies": {
-        "csv-parser": "^3.0.0",
-        "csv-stringify": "^6.3.4",
+        "csv-parse": "^3.0.0",
         "yargs": "^17.7.2"
     }
 }
