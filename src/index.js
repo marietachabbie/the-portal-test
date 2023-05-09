@@ -2,9 +2,14 @@
 
 (() => {
     try {
-        const Utils = require('./utils/Utils');
+        const Aggregator = require('./aggregator');
+        const { pipeline } = require('stream');
         const fs = require('fs');
-        const args = require('yargs')
+        const { parse } = require('csv-parse');
+        const { stringify } = require('csv-stringify');
+        const yargs = require('yargs');
+
+        const args = yargs
             .option('input', {
                 alias: 'i',
                 describe: 'Input CSV file path. The default will be stdin.',
@@ -20,20 +25,47 @@
             .strict()
             .argv;
 
-        let inputStream = process.stdin;
-        let outputStream = process.stdout;
+        let input = process.stdin;
+        let output = process.stdout;
 
         if (args.input && args.input != '' && args.input != '-') {
-            inputStream = fs.createReadStream(args.input);
+            input = fs.createReadStream(args.input);
         }
 
         if (args.output && args.output != '' && args.output != '-') {
-            outputStream = fs.createWriteStream(args.output);
+            output = fs.createWriteStream(args.output);
         }
 
-        Utils.transformCSVStream(inputStream, outputStream);
+        const csv_reader = parse({
+            delimiter: ',',
+            trim: true,
+            relax_column_count_more: true,
+            columns: true,
+            bom: true,
+        });
+
+        const csv_writer = stringify({
+            delimiter: ',',
+            header: true,
+            columns: [ 'product_code', 'quantity', 'pick_location' ],
+            bom: false,
+        });
+
+        const transformer = new Aggregator();
+
+        pipeline(
+            input,
+            csv_reader,
+            transformer,
+            csv_writer,
+            output,
+            (error) => {
+                if (error) { throw error; }
+
+            }
+        );
     } catch (error) {
-        console.error('Something went wrong.');
         console.error(error);
+        process.exitCode = 1;
     }
 })();

@@ -17,12 +17,17 @@ Redirect to the project directory and run:
 
 ```sh
 npm install -g .
-optimise-shelf-pickup -i input.csv -o output.csv
+shelf-pickup -i input.csv -o output.csv
 ```
 
 If no input filepath given, the program will read from `stdin`. If no output filepath given, the program will write into `stdout`.
 
 For more informartion:
 ```sh
-optimise-shelf-pickup --help
+shelf-pickup --help
+```
+# To test the output
+
+```sh
+npm run test
 ```
