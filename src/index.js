@@ -1,14 +1,13 @@
 #!/usr/bin/env node
+const Aggregator = require('./aggregator');
+const { pipeline } = require('stream');
+const fs = require('fs');
+const { parse } = require('csv-parse');
+const { stringify } = require('csv-stringify');
+const yargs = require('yargs');
 
 (() => {
     try {
-        const Aggregator = require('./aggregator');
-        const { pipeline } = require('stream');
-        const fs = require('fs');
-        const { parse } = require('csv-parse');
-        const { stringify } = require('csv-stringify');
-        const yargs = require('yargs');
-
         const args = yargs
             .option('input', {
                 alias: 'i',
@@ -51,12 +50,12 @@
             bom: false,
         });
 
-        const transformer = new Aggregator();
+        const aggregator = new Aggregator();
 
         pipeline(
             input,
             csv_reader,
-            transformer,
+            aggregator,
             csv_writer,
             output,
             (error) => {
